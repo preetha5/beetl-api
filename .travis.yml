@@ -1,0 +1,10 @@
+language: node_js
+node_js: node
+services: "-mongodb"
+deploy:
+  provider: heroku
+  api_key:
+    secure: gtrd+uI7K/6taJwHv4bskgfi6Cc8lLwokN8fBPnJ/2W0Y8FohUnYdfZ8W4+EH+tAKbpd8r/qEAj7QrCuu49sUTyjL6YrJHM0ljzxnLYFvtBfdDRTw2feEiPZZ5NJuXqLlqhNqVaYfB+fUEHkXZ2SGl/Jiz1IaqhD7hFJeSOnOhFblKiCtahv6o7h7dwc3mbnZRsx1KMBo64JCSG/T8/3BbUllV/jAeXfjy4BiqmhZzGcwwH6johBk/wonWYVt9/Dg/KSA1NfSlKceE5RutlS/ToDAJ+sJLdFwTf0ydwcqhWGZT2dWFfDbul5WBVczFA02ISMcsmQfrQG86OildTX3KdeJTM/Rw8wl6ukGKdmHsLeY/UxUKepwWjQGYZmhNENP4dpA3SbA1qvqyPvO5FjHJFqpe7Dg3zEL9AlDHLwkiyyWJhVF3FU4a/VrIfEF/94288tqO8BWuc7AYy6fBfWOHoF2yZBvVgE6QNGp0a4Ep8XUlZJaGZK6J95TjvPsLtqKJwoUv7vWz7SwXd0uqrry8uVC6NqS9HWWIY2wQd97e6UH48HdSTAAjOVJeilp33xGIFjNcLtquUtGS+3hMkjLpCZnYKq9dPQFbsZCEMLHcF743V6GTQbeNntGrEN19wDwK3Gx2C3lUkuguPeNKYg/bIBZ4zRp/JNSW37y/8K4lE=
+  app: protected-sierra-49309
+  on:
+    repo: preetha5/beetl-api
