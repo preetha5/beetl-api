@@ -7,16 +7,12 @@ const jsonParser = bodyParser.json();
 //Import config data
 const {DATABASE_URL, PORT} = require('./config');
 
-//User Authentication Includes
+//Call routers
 const passport = require('passport');
 const { usersRouter} = require('./users/usersRouter');
 const { Router: authRouter, localStrategy, jwtStrategy } = require('./auth');
-
-//Call routers
-
-//Import config data
-
-//Import the model
+const { productsRouter} = require('./products/productsRouter');
+const {bugsRouter} = require('./bugs/bugsRouter');
 
 //Create App
 const app = express();
@@ -24,15 +20,6 @@ const app = express();
 /* CORS  setup */
 const cors = require('cors');
 const {CLIENT_ORIGIN} = require('./config');
-
-//User Authentication-Router
-passport.use(localStrategy);
-passport.use(jwtStrategy);
-const jwtAuth = passport.authenticate('jwt', {session:false});
-
-app.use('/api/users', usersRouter);
-app.use('/api/login', authRouter);
-
 //Enable CORS
 app.use(
     cors({
@@ -40,14 +27,26 @@ app.use(
     })
 );
 
+//User Authentication
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+const jwtAuth = passport.authenticate('jwt', {session:false});
+
+
+
 //Middleware and routers
 app.use(express.static('public'));
 app.use(morgan('common'));
 
-
+//API ENDPOINTS
+app.use('/api/users', usersRouter);
+app.use('/api/login', authRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/bugs', bugsRouter);
 app.get('/api/*', (req, res) => {
-   res.json({ok: true});
-});
+    res.json({ok: true});
+ });
+
 
 // this function connects to our database, then starts the server
 function runServer(databaseUrl = DATABASE_URL, port = PORT) {

@@ -8,7 +8,7 @@ const jsonParser = bodyParser.json();
 
 //Post endpoint to register the new user
 usersRouter.post('/', jsonParser, (req, res) => {
- const requiredFields = ['username' , 'password'];
+ const requiredFields = ['username' , 'password', 'email'];
  console.log(requiredFields);
  const missingFields = requiredFields.find(field => !(field in req.body));
 
@@ -21,7 +21,7 @@ usersRouter.post('/', jsonParser, (req, res) => {
      })
  }
  //Check that input values are of type 'String'
- const inputStrings = ["username", "password", "firstName", "lastName"];
+ const inputStrings = ["username", "password", "email", "firstName", "lastName"];
  const nonStrings = inputStrings.find(input => input in req.body 
     && typeof req.body[input] !== 'string');
 
@@ -35,7 +35,7 @@ if (nonStrings){
 }
 
 //Check to make sure there's no whitespace in username/password fields
-const expectedTrimmedFields = ['username', 'password'];
+const expectedTrimmedFields = ['username', 'password', 'email'];
 const nonTrimmedFields = expectedTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
 );
@@ -84,12 +84,29 @@ const sizedFields = {
     });
   }
 
-  let {username, password, firstName = '', lastName = ''} = req.body;
+  let {username, email, role='lead', password, firstName = '', lastName = ''} = req.body;
   // Trim the firstName and lastName
   firstName = firstName.trim();
   lastName = lastName.trim();
-  console.log(User.find({username}));
-  User.find({username})
+  role=role.trim();
+  const uniqueFields = ["username", "email"];
+
+User.find({email}).count()
+    .then(count =>{
+        if (count >0){
+            console.info("email account exists");
+            return res.status(422).json({
+                code: 422,
+            reason: 'Validation Error',
+            message: "Email already exists",
+            location: 'email'
+            });
+    }
+    return;
+    //User does not exist so has password
+    //return User.hashPassword(password);
+    });
+    User.find({username})
     .count()
     .then(count =>{
         if (count >0){
@@ -99,31 +116,32 @@ const sizedFields = {
                 reason: 'Validation Error',
                 message: 'Username already taken',
                 location: 'username'
-              });
+            });
         }
-        console.log(count);
-        //User does not exist so has password
+            //User does not exist so has password
         return User.hashPassword(password);
     })
     .then(hash =>{
+        console.log(hash);
         return User.create({
             username,
+            email,
             password:hash,
             firstName,
-            lastName
+            lastName,
+            role
         })
+    })
     .then(user => {
-        
+        console.log("user is ", user);
         return res.status(201).json(user.serialize());
         })
     .catch(err =>{
         if (err.reason === 'Validation Error') {
             return res.status(err.code).json(err);
-          }
-          res.status(500).json({code: 500, message: 'Internal server error'});
+        }
+        res.status(500).json({code: 500, message: 'Internal server error'});
         });
-    });
-
 });// End POST to users end point
 
 //Get endpoint to find all users in the system
@@ -134,13 +152,56 @@ usersRouter.get('/', (req, res) => {
 });//End Get all users endpoint
 
 //Get endpoint to get a particular user details
-usersRouter.get('/:username', (req, res) => {
-    return User.find({"username": `${req.params.username}`})
-            .then(users => res.json(users.map(user => user.serialize())))
+usersRouter.get('/:userId', (req, res) => {
+    return User.findById(req.params.userId)
+            .then(user => res.json(user.serialize()))
             .catch(err => {
                 console.error(err)
-                res.status(500).json({error: 'Something went wrong'})
+                res.status(500).json({error: 'Internal server error'})
             })
 })
+
+
+//PUT endpoint to api/users to update a particular user(ID)
+usersRouter.put('/:userId', jsonParser, (req,res) => {
+    const userId = req.params.userId;
+    console.log('inside userRouter PUT endpoint, req is ', req.body);
+   const updated = {};
+   const updateableFields = ['username', 'role', 'firstName', 'lastName'];
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            console.log("updating field", field);
+            updated[field] = req.body[field];
+        }
+    });
+    console.log("fields to be updated", updated)
+    return User.findByIdAndUpdate(userId,
+            { $set: updated},
+            {new:true}
+        )
+        .then(updatedUser =>{
+            console.log(updatedUser);
+            return res.status(204).end();
+        })
+        .catch(err =>{
+            console.log(err);
+            res.status(500).json({error:'Unable to modify record'});
+        });
+});
+
+//Delete endpoint to delete a particular user details
+usersRouter.delete('/:username', (req, res) => {
+    User.findOne({"username": `${req.params.username}`})
+        .remove()
+        .then(() => {
+            console.log(`Deleted user record with username ${req.params.username}`);
+            res.status(204).end();
+        })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({error: 'Something went wrong'})
+        })
+})
+
 
 module.exports = {usersRouter};

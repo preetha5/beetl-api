@@ -11,6 +11,11 @@ const UserSchema = mongoose.Schema({
         unique: true,
         required: true
     },
+    username:{
+        type: String,
+        unique: true,
+        required: true
+    },
     password:{
         type:String,
         required: true
@@ -26,14 +31,21 @@ const UserSchema = mongoose.Schema({
     role:{
         type:String,
         default:'lead'
-    }
+    },
+    bugList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Bug'
+      }]
 });
 
 UserSchema.methods.serialize = function(){
     return {
+        id:this._id,
         username:this.username || '',
+        email:this.email || '',
         firstName: this.firstName || '',
-        lastName: this.lastName || ''
+        lastName: this.lastName || '',
+        role:this.role || ''
     };
 };
 
