@@ -91,7 +91,7 @@ productsRouter.put('/:productId', jsonParser, (req,res) => {
         )
         .then(updatedProduct =>{
             console.log(updatedProduct);
-            return res.status(204).end();
+            return res.status(200).json(updatedProduct);
         })
         .catch(err =>{
             console.log(err);
