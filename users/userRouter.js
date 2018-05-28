@@ -3,11 +3,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const {User} = require('./models');
-const usersRouter = express.Router();
+const userRouter = express.Router();
 const jsonParser = bodyParser.json();
 
 //Post endpoint to register the new user
-usersRouter.post('/', jsonParser, (req, res) => {
+userRouter.post('/', jsonParser, (req, res) => {
  const requiredFields = ['username' , 'password', 'email'];
  console.log(requiredFields);
  const missingFields = requiredFields.find(field => !(field in req.body));
@@ -145,14 +145,14 @@ User.find({email}).count()
 });// End POST to users end point
 
 //Get endpoint to find all users in the system
-usersRouter.get('/', (req, res) => {
+userRouter.get('/', (req, res) => {
     return User.find()
       .then(users => res.json(users.map(user => user.serialize())))
       .catch(err => res.status(500).json({message: 'Internal server error'}))
 });//End Get all users endpoint
 
 //Get endpoint to get a particular user details
-usersRouter.get('/:userId', (req, res) => {
+userRouter.get('/:userId', (req, res) => {
     return User.findById(req.params.userId)
             .then(user => res.json(user.serialize()))
             .catch(err => {
@@ -163,7 +163,7 @@ usersRouter.get('/:userId', (req, res) => {
 
 
 //PUT endpoint to api/users to update a particular user(ID)
-usersRouter.put('/:userId', jsonParser, (req,res) => {
+userRouter.put('/:userId', jsonParser, (req,res) => {
     const userId = req.params.userId;
     console.log('inside userRouter PUT endpoint, req is ', req.body);
    const updated = {};
@@ -190,7 +190,7 @@ usersRouter.put('/:userId', jsonParser, (req,res) => {
 });
 
 //Delete endpoint to delete a particular user details
-usersRouter.delete('/:username', (req, res) => {
+userRouter.delete('/:username', (req, res) => {
     User.findOne({"username": `${req.params.username}`})
         .remove()
         .then(() => {
@@ -204,4 +204,4 @@ usersRouter.delete('/:username', (req, res) => {
 })
 
 
-module.exports = {usersRouter};
+module.exports = {userRouter};

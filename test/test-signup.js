@@ -14,12 +14,14 @@ const expect = chai.expect;
 // see: https://github.com/chaijs/chai-http
 chai.use(chaiHttp);
 
-describe('/signup', function() {
+describe('/api/users', function() {
   const username = 'exampleUser';
+  const email = 'example@test.com';
   const password = 'examplePass';
   const firstName = 'Example';
   const lastName = 'User';
   const usernameB = 'exampleUserB';
+  const emailB= 'exampleBBB@test.com';
   const passwordB = 'examplePassB';
   const firstNameB = 'ExampleB';
   const lastNameB = 'UserB';
@@ -38,20 +40,17 @@ describe('/signup', function() {
     return User.remove({});
   });
 
-  describe('/signup', function() {
+  describe('/api/users', function() {
     describe('POST', function() {
       it('Should reject users with missing username', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             password,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -64,18 +63,40 @@ describe('/signup', function() {
             expect(res.body.location).to.equal('username');
           });
       });
+      it('Should reject users with missing EMAIL', function() {
+        return chai
+          .request(app)
+          .post('/api/users')
+          .send({
+            password,
+            username,
+            lastName
+          })
+          .catch(err => {
+            if (err instanceof chai.AssertionError) {
+              throw err;
+            }
+
+            const res = err.response;
+            expect(res).to.have.status(422);
+            expect(res.body.reason).to.equal('Validation Error');
+            expect(res.body.message).to.equal('Missing field');
+            expect(res.body.location).to.equal('email');
+          });
+      });
       it('Should reject users with missing password', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
+            email,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -91,16 +112,17 @@ describe('/signup', function() {
       it('Should reject users with non-string username', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username: 1234,
+            email,
             password,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -118,16 +140,16 @@ describe('/signup', function() {
       it('Should reject users with non-string password', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password: 1234,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -142,19 +164,47 @@ describe('/signup', function() {
             expect(res.body.location).to.equal('password');
           });
       });
+      it('Should reject users with non-string email', function() {
+        return chai
+          .request(app)
+          .post('/api/users')
+          .send({
+            username,
+            password,
+            email: 1234,
+            firstName,
+            lastName
+          })
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
+          .catch(err => {
+            if (err instanceof chai.AssertionError) {
+              throw err;
+            }
+
+            const res = err.response;
+            expect(res).to.have.status(422);
+            expect(res.body.reason).to.equal('Validation Error');
+            expect(res.body.message).to.equal(
+              'Invalid input type. Expected :String'
+            );
+            expect(res.body.location).to.equal('email');
+          });
+      });
       it('Should reject users with non-string first name', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password,
             firstName: 1234,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -172,16 +222,16 @@ describe('/signup', function() {
       it('Should reject users with non-string last name', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password,
             firstName,
             lastName: 1234
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -199,17 +249,17 @@ describe('/signup', function() {
       it('Should reject users with non-trimmed username', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username: ` ${username} `,
             password,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
-          .catch(err => {
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
+        //   .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
             }
@@ -226,16 +276,16 @@ describe('/signup', function() {
       it('Should reject users with non-trimmed password', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password: ` ${password} `,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -253,16 +303,16 @@ describe('/signup', function() {
       it('Should reject users with empty username', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username: '',
             password,
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -280,16 +330,16 @@ describe('/signup', function() {
       it('Should reject users with password less than 8 characters', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password: '1234567',
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -307,16 +357,16 @@ describe('/signup', function() {
       it('Should reject users with password greater than 72 characters', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
             password: new Array(73).fill('a').join(''),
             firstName,
             lastName
           })
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -335,22 +385,23 @@ describe('/signup', function() {
         // Create an initial user
         return User.create({
           username,
+          email,
           password,
           firstName,
           lastName
         })
           .then(() =>
             // Try to create a second user with the same username
-            chai.request(app).post('/signup').send({
+            chai.request(app).post('/api/users').send({
               username,
               password,
               firstName,
               lastName
             })
           )
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
+        //   .then(() =>
+        //     expect.fail(null, null, 'Request should not succeed')
+        //   )
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
@@ -368,9 +419,10 @@ describe('/signup', function() {
       it('Should create a new user', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
+            email,
             password,
             firstName,
             lastName
@@ -379,11 +431,15 @@ describe('/signup', function() {
             expect(res).to.have.status(201);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.keys(
+                'id',
               'username',
               'firstName',
-              'lastName'
+              'lastName',
+              'email',
+              'role'
             );
             expect(res.body.username).to.equal(username);
+            expect(res.body.email).to.equal(email);
             expect(res.body.firstName).to.equal(firstName);
             expect(res.body.lastName).to.equal(lastName);
             return User.findOne({
@@ -403,9 +459,10 @@ describe('/signup', function() {
       it('Should trim firstName and lastName', function() {
         return chai
           .request(app)
-          .post('/signup')
+          .post('/api/users')
           .send({
             username,
+            email,
             password,
             firstName: ` ${firstName} `,
             lastName: ` ${lastName} `
@@ -415,6 +472,9 @@ describe('/signup', function() {
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.keys(
               'username',
+              'email',
+              'id',
+              'role',
               'firstName',
               'lastName'
             );
@@ -433,4 +493,4 @@ describe('/signup', function() {
       });
     });
   });
-});
+

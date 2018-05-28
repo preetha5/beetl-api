@@ -12,7 +12,7 @@ const createAuthToken = function(user) {
     console.info("token expires at config.JWT_EXPIRY", config.JWT_EXPIRY);
     return jwt.sign({user}, config.JWT_SECRET, 
         {
-            subject: user.username,
+            subject: user.email,
             expiresIn: config.JWT_EXPIRY,
             algorithm: 'HS256'
         });
@@ -25,8 +25,9 @@ Router.use(bodyParser.json());
 Router.post('/', localAuth, (req,res) =>{
     console.info("inside login post route", req.body);
     const authToken = createAuthToken(req.user.serialize());
+    const email = req.body.email;
     const username = req.body.username;
-    res.json({authToken,username });
+    res.json({authToken,email, username });
 });
 
 const jwtAuth = passport.authenticate('jwt', {session:false});

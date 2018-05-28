@@ -9,7 +9,7 @@ const {DATABASE_URL, PORT} = require('./config');
 
 //Call routers
 const passport = require('passport');
-const { usersRouter} = require('./users/usersRouter');
+const { userRouter} = require('./users');
 const { Router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const { productsRouter} = require('./products/productsRouter');
 const {bugsRouter} = require('./bugs/bugsRouter');
@@ -39,7 +39,7 @@ app.use(express.static('public'));
 app.use(morgan('common'));
 
 //API ENDPOINTS
-app.use('/api/users', usersRouter);
+app.use('/api/users', userRouter);
 app.use('/api/login', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/bugs', bugsRouter);

@@ -1,15 +1,17 @@
 'use strict';
 const { Strategy: LocalStrategy} = require('passport-local');
 const {Strategy: JwtStrategy, ExtractJwt} = require('passport-jwt');
-const {User} = require('../users/models');
+const {User} = require('../users');
 const { JWT_SECRET } = require('../config');
 
 //Verify that user is providing the correct credentials
-const localStrategy = new LocalStrategy((username, password, callback) =>{
+const localStrategy = new LocalStrategy({usernameField: 'email'},(username, password, callback) =>{
     let user;
-    User.findOne({username: username})
+    console.log("inside local strategy ", username);
+    User.findOne({email: username})
         .then(_user => {
             user = _user;
+            console.log("inside local strategy ", user);
             if(!user){
                 return Promise.reject({
                     reason: 'LoginError',
@@ -25,6 +27,7 @@ const localStrategy = new LocalStrategy((username, password, callback) =>{
                     message: 'Incorrect username or password'
                 });
             }
+            console.log("inside local strategy :pwd is valid ");
             return callback(null, user);
         })
         .catch(err => {
