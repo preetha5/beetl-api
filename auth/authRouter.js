@@ -12,7 +12,7 @@ const createAuthToken = function(user) {
     console.info("token expires at config.JWT_EXPIRY", config.JWT_EXPIRY);
     return jwt.sign({user}, config.JWT_SECRET, 
         {
-            subject: user.email,
+            subject: user.username,
             expiresIn: config.JWT_EXPIRY,
             algorithm: 'HS256'
         });
@@ -33,6 +33,7 @@ Router.post('/', localAuth, (req,res) =>{
 const jwtAuth = passport.authenticate('jwt', {session:false});
 
 Router.post('/refresh', jwtAuth, (req, res) => {
+    console.log("trying to refresh token");
     const authToken = createAuthToken(req.user);
     res.json({authToken});
 });

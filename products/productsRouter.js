@@ -61,7 +61,7 @@ productsRouter.post('/', jsonParser, (req, res) =>{
 //PATCH endpoint to api/Products , (eg: patch products notes to the corresponding record)
 productsRouter.put('/:productId', jsonParser, (req,res) => {
     const productId = req.params.productId;
-    console.log('inside product details PATCH, body is ', req.body);
+    console.log('inside product details PUT, body is ', req.body);
     // const requiredFields = ['name', 'id'];
     // for (let i=0; i<requiredFields.length; i++){
     //     const field = requiredFields[i];
@@ -100,12 +100,13 @@ productsRouter.put('/:productId', jsonParser, (req,res) => {
 });
 
 //Delete endpoint to delete a particular product
-productsRouter.delete('/:productName', (req, res) => {
-    Product.findOne({"name": `${req.params.productName}`})
+productsRouter.delete('/:productId', (req, res) => {
+    console.log("Going to delete ", req.params.productId);
+    Product.findById(req.params.productId)
         .remove()
         .then(() => {
-            console.log(`Deleted product record with name 
-                ${req.params.productName}`);
+            console.log(`Deleted product record with id 
+                ${req.params.productId}`);
             res.status(204).end();
         })
         .catch(err => {

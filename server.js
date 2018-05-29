@@ -19,19 +19,30 @@ const app = express();
 
 /* CORS  setup */
 const cors = require('cors');
-const {CLIENT_ORIGIN} = require('./config');
+//const {CLIENT_ORIGIN} = require('./config');
+
 //Enable CORS
-app.use(
-    cors({
-        origin: CLIENT_ORIGIN
-    })
-);
+app.use((req, res, next) => { 
+    res.header('Access-Control-Allow-Origin', '*'); 
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization'); 
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+
+    if(req.method === 'OPTIONS') { 
+        return res.sendStatus(204); 
+    } 
+    return next(); 
+});
+
+// app.use(
+//     cors({
+//         origin: CLIENT_ORIGIN
+//     })
+// );
 
 //User Authentication
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 const jwtAuth = passport.authenticate('jwt', {session:false});
-
 
 
 //Middleware and routers

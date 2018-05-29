@@ -167,7 +167,7 @@ userRouter.put('/:userId', jsonParser, (req,res) => {
     const userId = req.params.userId;
     console.log('inside userRouter PUT endpoint, req is ', req.body);
    const updated = {};
-   const updateableFields = ['username', 'role', 'firstName', 'lastName'];
+   const updateableFields = ['username', 'email', 'role', 'firstName', 'lastName'];
     updateableFields.forEach(field => {
         if (field in req.body) {
             console.log("updating field", field);
@@ -190,18 +190,18 @@ userRouter.put('/:userId', jsonParser, (req,res) => {
 });
 
 //Delete endpoint to delete a particular user details
-userRouter.delete('/:username', (req, res) => {
-    User.findOne({"username": `${req.params.username}`})
+userRouter.delete('/:userId', (req, res) => {
+    User.findById(req.params.userId)
         .remove()
         .then(() => {
-            console.log(`Deleted user record with username ${req.params.username}`);
+            console.log(`Deleted user record with username ${req.params.userId}`);
             res.status(204).end();
         })
         .catch(err => {
             console.error(err)
             res.status(500).json({error: 'Something went wrong'})
         })
-})
+})//End: Delete endpoint
 
 
 module.exports = {userRouter};
