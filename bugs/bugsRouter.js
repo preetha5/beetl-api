@@ -56,7 +56,7 @@ bugsRouter.get('/user/:userId',(req,res) => {
 
 //post to create a bug
 bugsRouter.post('/', jsonParser, (req, res) =>{
-    console.log('inside the bug router');
+    console.log('inside the bug router', req.body);
     let {bugId, title, description,priority, 
         severity,status, dueDate, productId, version, reporter, assignee} = req.body;
     const requiredFields = ['bugId', 'title', 'description', 'productId'];

@@ -27,7 +27,8 @@ Router.post('/', localAuth, (req,res) =>{
     const authToken = createAuthToken(req.user.serialize());
     const email = req.body.email;
     const username = req.body.username;
-    res.json({authToken,email, username });
+    console.log("authtoken created: ", authToken);
+    res.json({authToken});
 });
 
 const jwtAuth = passport.authenticate('jwt', {session:false});
