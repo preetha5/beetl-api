@@ -14,6 +14,9 @@ const jsonParser = bodyParser.json();
 bugsRouter.get('/', (req, res) => {
     console.log("inside get endpoint");
     Bug.find()
+       .populate('productId')
+       .populate('assignee')
+       .populate('reporter')
       .then(bugs => res.json(bugs))
       .catch(err => res.status(500).json({message: 'Internal server error'}))
 });//End Get all products endpoint
