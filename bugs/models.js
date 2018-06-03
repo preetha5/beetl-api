@@ -21,6 +21,7 @@ const bugSchema = mongoose.Schema({
             ref: 'Product'
         },
         version:{type: Number,default:1.0},
+        component:{type:String},
         dueDate:{type:Date,default: Date.now},
         status:{ type:String, default:'open'}
 })

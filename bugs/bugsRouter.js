@@ -122,10 +122,11 @@ bugsRouter.post('/', jsonParser, (req, res) =>{
 //PUT to api/bugs ENDPOINT to update a particular user(ID)
 bugsRouter.put('/:bugId', jsonParser, (req,res) => {
     const bugId = req.params.bugId;
-    console.log('inside userRouter PUT endpoint, req is ', req.body);
+    console.log("inside userRouter PUT endpoint : "+ bugId + req.body);
    const updated = {};
    const updateableFields = [
         'title',
+        'component',
         'description',
         'priority', 
         'severity',
@@ -142,12 +143,13 @@ bugsRouter.put('/:bugId', jsonParser, (req,res) => {
         }
     });
     console.log("fields to be updated", updated)
+    console.log('bug to be updated..', bugId);
     return Bug.findByIdAndUpdate(bugId,
             { $set: updated},
             {new:true}
         )
         .then(updatedBug =>{
-            console.log(updatedBug);
+            console.log("bug found and updated", updatedBug);
             return res.status(201).json(updatedBug);
         })
         .catch(err =>{

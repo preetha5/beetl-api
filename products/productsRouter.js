@@ -13,8 +13,9 @@ const jsonParser = bodyParser.json();
 productsRouter.get('/', (req, res) => {
     console.log("inside get endpoint");
     Product.find()
-      .then(products => res.json(products))
-      .catch(err => res.status(500).json({message: 'Internal server error'}))
+        .populate('bugList')
+        .then(products => res.json(products))
+        .catch(err => res.status(500).json({message: 'Internal server error'}))
 });//End Get all products endpoint
 
 //Get endpoint to get a particular product details
