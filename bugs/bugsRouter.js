@@ -59,22 +59,29 @@ bugsRouter.get('/user/:userId',(req,res) => {
 
 //post to create a bug
 bugsRouter.post('/', jsonParser, (req, res) =>{
-    console.log('inside the bug router', req.body);
-    let {bugId, title, description,priority, 
+    console.log('inside the POST endpoint bug router', req.body);
+    let {bugId, title, component, description,priority, 
         severity,status, dueDate, productId, version, reporter, assignee} = req.body;
-    const requiredFields = ['bugId', 'title', 'description', 'productId'];
+    const requiredFields = ['bugId', 'title', 'description', 'productId', 'assignee', 'reporter'];
     for (let i=0; i<requiredFields.length; i++){
         const field = requiredFields[i];
-        if(!(field in req.body)){
-            const message = `Request is missing field: ${field}`;
+        if(req.body[field] === '' || req.body[field] === undefined ){
+            const message = `Request is missing field: ${field} it is ${req.body[field]}`;
             console.error(message);
-            return res.status(400).send(message);
+            return res.status(400).json({"error": message});
         }
+
+        // if(!(field in req.body)){
+        //     const message = `Request is missing field: ${field}`;
+        //     console.error(message);
+        //     return res.status(400).send(message);
+        // }
     }
     let newBug;
     return Bug.create({
             bugId,
             title,
+            component,
             description,
             priority, 
             severity,
@@ -109,7 +116,7 @@ bugsRouter.post('/', jsonParser, (req, res) =>{
             return res.status(201).json(newBug)
         })
         .catch(err =>{
-            console.log(err);
+            console.log('error is : ', err);
             if(err.code === 11000){
                 return res.status(500).json({error:"duplicate entry"});
             }
